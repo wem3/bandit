@@ -43,8 +43,8 @@ simParams = [alph iTemp];
 
 simData = [];
 for i = 1:numSubs
-    out = generativeTD(i, alph(i), iTemp(i));
-    simData = [simData; out];
+    subData = generativeTD(i, alph(i), iTemp(i));
+    simData = [simData; subData];
 end
 
 if writeData

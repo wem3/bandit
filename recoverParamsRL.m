@@ -26,15 +26,14 @@ elseif prior == 2
     LLE_fun = @LLE_Prior;
 end
 
-     lower_bnd = [0 -Inf];
-     upper_bnd = [1 Inf];
-    init_params = [rand(nStPts,1) normrnd(1.5, 1, nStPts,1)];
-    
+lower_bnd = [0 -Inf];
+upper_bnd = [1 Inf];
+init_params = [rand(nStPts,1) normrnd(1.5, 1, nStPts,1)];
 
 if strcmp(generate, 'Y');
     % data = [sub, trl, choice, rew];
     write = true;
-    [dat]= makeDrifts();
+    [dat]= simulateBandit();
 else
     assert(exist('simData.csv', 'file')==2, 'no data file!');
     dat = load('simData.csv');

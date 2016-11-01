@@ -1,4 +1,4 @@
-function [out] = generativeTD(subNum, learnRate, iTemp)
+function [subData] = generativeTD(subNum, learnRate, iTemp)
 % runs restless bandit task on TD model
 
 pReward = load('bombProbDrift.csv');
@@ -7,14 +7,12 @@ pReward = load('bombProbDrift.csv');
 
 numTrials = size(pReward,1);
 numArms   = size(pReward,2);
-
 choice    = nan(1,numTrials);
 rewHist   = nan(1,numTrials);
 Q         = repmat(1/numArms,1,numArms);
 Qsamp     = Q;
 
 for i = 1:numTrials
-   
    for arm = 1:numArms
       sMax(arm) = exp(iTemp*Q(arm)) ./ sum(exp(iTemp*Q));
    end
@@ -32,4 +30,4 @@ end
 %trl nums
 trl = 1:numTrials;
 %make output:
-out = [subNum*ones(numTrials, 1) trl' choice', rewardHist'];
+subData = [subNum*ones(numTrials, 1) trl' choice', rewardHist'];
