@@ -1,7 +1,7 @@
 % recoverParams estimates parameters from 20 simulated subjects
 % (model = Temporal Difference learning) playing a restless bandit task, with
 % individual generative parameters sampled from the same
-% distributions (see runWriteTask).
+% distributions (see makeDrifts.m).
 % User enters estimation technique: Maximum Likelihood (ML) or Maximum A
 % Posteriori (MAP) estimation. Estimated parameters written to file
 % (compare to generative params per simulated subject: genParams.csv)
@@ -34,10 +34,10 @@ end
 if strcmp(generate, 'Y');
     % data = [sub, trl, choice, rew];
     write = true;
-    [dat]= runWriteTask(write);
+    [dat]= makeDrifts();
 else
-    assert(exist('datTD.csv', 'file')==2, 'no data file!');
-    dat = load('datTD.csv');
+    assert(exist('simData.csv', 'file')==2, 'no data file!');
+    dat = load('simData.csv');
 end
 
 options = optimset(@fmincon); 

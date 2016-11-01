@@ -34,7 +34,7 @@ function [simData simParams] = simulateBandit(numSubs,writeData)
 
 if nargin == 0
     numSubs = 20;
-    writeData = false;
+    writeData = true;
 end
 
 alph = betarnd(2, 5, numSubs, 1);
