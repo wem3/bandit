@@ -31,12 +31,12 @@ upper_bnd = [1 Inf];
 init_params = [rand(nStPts,1) normrnd(1.5, 1, nStPts,1)];
 
 if strcmp(generate, 'Y');
-    % data = [sub, trl, choice, rew];
+    % data = [sub, trial, choice, reward];
     write = true;
-    [dat]= simulateBandit();
+    [simData, smxParams]= simulateBandit();
 else
     assert(exist('simData.csv', 'file')==2, 'no data file!');
-    dat = load('simData.csv');
+    simData = load('simData.csv');
 end
 
 options = optimset(@fmincon); 
@@ -45,7 +45,7 @@ options = optimset(options, 'TolX', 1e-06, 'TolFun', 1e-06, ...
                    'GradObj','off','derivativecheck', 'off', ...
                    'display','final', 'Algorithm', 'interior-point'); %sqp 
 
-subs = unique(dat(:, 1));
+subs = unique(simData(:, 1));
 
 fits =[];
 stdevs = [];
@@ -54,9 +54,9 @@ for s =  1:length(subs)
     this_sub = subs(s,1);
     disp(['Subject  ' num2str(this_sub)]);
         
-    sub_dat = dat(find(dat(:,1)==this_sub),:);
+    sub_dat = simData(find(simData(:,1)==this_sub),:);
     choice = sub_dat(:,3);
-    rew = sub_dat(:,4);
+    reward = sub_dat(:,4);
         
     sub_params =[];
     sub_LLEs = [];
@@ -65,7 +65,7 @@ for s =  1:length(subs)
  for reps = 1:nStPts
 
      [params, LLE, exitflag, out]=fmincon(@(params) LLE_fun(params, ...
-                 choice, rew), ...
+                 choice, reward), ...
 	         init_params(nStPts,:), [],[],[],[], ...
                  lower_bnd, upper_bnd, [], options);
      

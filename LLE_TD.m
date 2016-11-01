@@ -20,5 +20,5 @@ cp1 = smxProb(choice==1, 1);
 cp2 = smxProb(choice==2, 2);
 cp3 = smxProb(choice==3, 3);
 cp4 = smxProb(choice==4, 4);
-allProbs = [cp1; cp2 cp3 cp4];
+allProbs = [cp1; cp2; cp3; cp4];
 LLE = abs(sum(log(allProbs)));

@@ -1,4 +1,4 @@
-function [simData simParams] = simulateBandit(numSubs,writeData)
+function [simData smxParams] = simulateBandit(numSubs,writeData)
 % SIMULATEBANDIT.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Simulate [numSubs] subjects on 4-armed bandit (2 outcome) task.
@@ -18,7 +18,7 @@ function [simData simParams] = simulateBandit(numSubs,writeData)
 %   simData(:,4) = ore outcome
 %   simData(:,5) = bomb outcome
 %
-% simParams: [numSubs, 4] vector with subject specific simulation parameters
+% smxParams: [numSubs, 4] vector with subject specific softmax parameters
 %   simParams(:,1) = ore learning rate
 %   simParams(:,2) = ore iTemp
 %   simParams(:,3) = bomb learning rate
@@ -27,19 +27,19 @@ function [simData simParams] = simulateBandit(numSubs,writeData)
 % NOTES
 %
 % Learning rate (alpha) sampled from beta distribution (M = 0.2857).
-% Softmax temperature sampled from gamma distribution (M = 4).
+% Softmax temperature sampled from gamma distribution (M = check).
 % 
 % ~#wem3#~ [20161027]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin == 0
-    numSubs = 20;
+    numSubs = 50;
     writeData = true;
 end
 
 alph = betarnd(2, 5, numSubs, 1);
-iTemp = gamrnd(2, 2, numSubs, 1);
-simParams = [alph iTemp];
+iTemp = gamrnd(2, .7, numSubs, 1); % changed from iTemp = gamrnd(2, 2, numSubs, 1);
+smxParams = [alph iTemp];
 
 simData = [];
 for i = 1:numSubs
@@ -50,6 +50,6 @@ end
 if writeData
     filename = 'simData.csv';
     dlmwrite(filename, simData, 'delimiter', ',');
-    filename = 'simParams.csv';
-    dlmwrite(filename, simParams, 'delimiter', ',');    
+    filename = 'smxParams.csv';
+    dlmwrite(filename, smxParams, 'delimiter', ',');    
 end

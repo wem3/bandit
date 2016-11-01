@@ -27,7 +27,7 @@ for i = 1:numTrials
    Q(choice(i)) = Q(choice(i)) + learnRate * (reward - Q(choice(i)));
 end
 
-%trl nums
-trl = 1:numTrials;
+%trial nums
+trial = 1:numTrials;
 %make output:
-subData = [subNum*ones(numTrials, 1) trl' choice', rewardHist'];
+subData = [subNum*ones(numTrials, 1) trial' choice', rewardHist'];
