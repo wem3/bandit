@@ -32,7 +32,9 @@ function [bombDrifts, oreDrifts] = makeDrifts(numTrials, driftRate, writeDrifts,
 % ~#wem3#~ [20150404]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nargin == 2
+if nargin == 0
+    numTrials   = 360;
+    driftRate   = 0.2; 
     writeDrifts = true;
     plotDrifts  = true;
 elseif nargin ~= 4

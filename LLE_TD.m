@@ -2,14 +2,14 @@ function [LLE] = LLE_TD(params, choice, rew)
  
 lr = params(1);
 beta = params(2);
+numArms = 4;
+Q=repmat(1/numArms,1,numArms);
 
-Q = 0.5 * ones(1,2);
-
-smxProb = zeros(length(choice), 2);
+smxProb = zeros(length(choice), length(Q));
 
 for i = 1:length(choice)
     %softmax:
-    smxProb(i, :) = exp(beta*Q)./repmat(sum(exp(beta*Q), 2), 1, 2);
+    smxProb(i, :) = exp(beta*Q)./(sum(exp(beta*Q)));
     
     %update Qs:
     Q(choice(i)) = Q(choice(i)) + lr * (rew(i) - Q(choice(i)));
@@ -18,5 +18,7 @@ end
 
 cp1 = smxProb(choice==1, 1);
 cp2 = smxProb(choice==2, 2);
-allProbs = [cp1; cp2];
+cp3 = smxProb(choice==3, 3);
+cp4 = smxProb(choice==4, 4);
+allProbs = [cp1; cp2 cp3 cp4];
 LLE = abs(sum(log(allProbs)));

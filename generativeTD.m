@@ -1,37 +1,35 @@
-function [out] = generativeTD(subNum, alph, iTemp)
+function [out] = generativeTD(subNum, learnRate, iTemp)
 % runs restless bandit task on TD model
 
-totaltrials = 200;
-
-payoff = load('payProbDrift.csv');
+pReward = load('bombProbDrift.csv');
 %use new rew prob drift for every sub:
 % [payoff] = makeDrifts();
 
-choice = [];
-rewHist = [];
-Q = [0.5, 0.5];
-Qsamp = Q;
+numTrials = size(pReward,1);
+numArms   = size(pReward,2);
 
-for i = 1:totaltrials
-   %smx prob L choice:
-   smxL = exp(iTemp*Q(1)) ./ sum(exp(iTemp*Q));
+choice    = nan(1,numTrials);
+rewHist   = nan(1,numTrials);
+Q         = repmat(1/numArms,1,numArms);
+Qsamp     = Q;
+
+for i = 1:numTrials
    
+   for arm = 1:numArms
+      sMax(arm) = exp(iTemp*Q(arm)) ./ sum(exp(iTemp*Q));
+   end
+
    %choose:
-   p = rand;
-   [~, choice(i)] = max([smxL p]);
-   
-   % TD:
-   %update TD Qs:
-   prob = payoff(i, choice(i)); 
-   p = rand;
-   [~, rew] = max([p prob]);
-   rew = rew-1; % make 0s and 1s
-   rewHist(i) = rew;
-   Q(choice(i)) = Q(choice(i)) + alph * (rew - Q(choice(i)));
+   [~, choice(i)] = histc(rand(1),[0,cumsum(sMax)]); 
 
+   %update TD Qs:
+   [~, reward] = max([rand(1), pReward(i, choice(i))]); 
+   reward = reward - 1; % make 0s and 1s
+   rewardHist(i) = reward;
+   Q(choice(i)) = Q(choice(i)) + learnRate * (reward - Q(choice(i)));
 end
 
 %trl nums
-trl = 1:totaltrials;
+trl = 1:numTrials;
 %make output:
-out = [subNum*ones(totaltrials, 1) trl' choice', rewHist'];
+out = [subNum*ones(numTrials, 1) trl' choice', rewardHist'];
