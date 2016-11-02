@@ -1,16 +1,16 @@
 function [subData] = generativeTD(subNum, learnRate, iTemp)
 % runs restless bandit task on TD model
 
-global dataDir;
+global dataDir numTrials numArms;
 
 pReward = load(fullfile(dataDir,'bombProbDrift.csv'));
 %use new rew prob drift for every sub:
 % [payoff] = makeDrifts();
 
-numTrials = size(pReward,1);
-numArms   = size(pReward,2);
+%numTrials = size(pReward,1);
+%numArms   = size(pReward,2);
 choice    = nan(1,numTrials);
-rewHist   = nan(1,numTrials);
+rewardHist   = nan(1,numTrials);
 Q         = repmat(1/numArms,1,numArms);
 Qsamp     = Q;
 

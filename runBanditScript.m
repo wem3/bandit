@@ -28,17 +28,21 @@ numTrials = 360;                                                           % ~#~
 numSubs   = 50;                                                            % ~#~
 % set the driftRate, the speed with which reward probabilities change
 driftRate = 0.2;     % note: unnecessary unless generating new drifts      % ~#~
-
 % generate new choice data? set to false if only extracting params
 newChoices = true;                                                         % ~#~
-
+% use fixed learning rate & inverse temperature or sample from distribution?
+learnRate = 0.3;
+iTemp     = 1.2;
+% make fixedParams empty if you want unique per-subject learnRate & iTemp
+fixedParams = [learnRate iTemp];
 if newChoices; 
     writeData = true;
-    % simData   = [subNum, trialNum, choice (arm), reward (binary)]
-    % smxParams = [numSubs,2] = [learning rate, inverse temperature] 
-    [simData, smxParams]= simulateBandit(numSubs,writeData);
+    % simData: rows = numTrials, 
+    %          columns = [subNum, trialNum, choice (arm), reward (binary)]
+    % smxParams: rows = numSubs
+    %            columns[learning rate, inverse temperature] 
+    [simData, smxParams]= simulateBandit(numSubs,writeData,fixedParams);
 else
-    assert(exist(fullfile(dataDir,'simData.csv'), 'file')==2, 'no data file!');
     simData = load(fullfile(dataDir,'simData.csv'));
 end
 
@@ -50,7 +54,7 @@ subList = unique(simData(:,1));
 %%         (Less likely to require frequent adjustment)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % select optimization function: 'fmincon' or 'patternsearch'
-optFunction = 'patternsearch';                                             % ~#~
+optFunction = 'fmincon';                                                   % ~#~
 % number of random initial start points for function optimization
 nStPts    = 10;                                                            % ~#~
 
@@ -100,7 +104,7 @@ for subCount =  1:length(subList)
         % using fmincon
         if strcmp(optFunction,'fmincon')
             [params, LLE, exitflag, out]=fmincon(@(params)...
-                LLE_fun(params, choice, reward), initParams(nStPts,:),...
+                LLE_fun(params, choice, reward), initParams(reps,:),...
                 [],[],[],[], lowerBound, upperBound, [], options);
         % using patternsearch
         elseif strcmp(optFunction,'patternsearch')     
@@ -116,17 +120,18 @@ for subCount =  1:length(subList)
         sub_output = [ones(size(sub_params,1),1)*curSub sub_params ...
         sub_LLEs sub_flags];
 
-
+    end
         %pull best params
         best_LLE = min(sub_output(:,end-1));
         best_fit = sub_output(find(sub_output(:,end-1)==best_LLE),:);
 
         if size(best_fit, 1)>1
             best_fit = best_fit(1,:);
-        end     
+        end 
+    
 
-        fits = [fits; best_fit];
-    end
+    fits = [fits; best_fit];
+    
 
 end
 

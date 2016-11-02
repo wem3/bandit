@@ -1,4 +1,4 @@
-function [simData smxParams] = simulateBandit(numSubs,writeData)
+function [simData smxParams] = simulateBandit(numSubs,writeData,fixedParams)
 % SIMULATEBANDIT.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Simulate [numSubs] subjects on k-armed bandit
@@ -31,19 +31,16 @@ function [simData smxParams] = simulateBandit(numSubs,writeData)
 % ~#wem3#~ [20161027]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if nargin == 0
-    numSubs   = 50;
-    writeData = true;
+global dataDir;
+% check for fixed learning rate & inverse temperature
+if ~isempty(fixedParams)
+learnRate = ones(numSubs,1)*fixedParams(1); 
+iTemp     = ones(numSubs,1)*fixedParams(2);
+else
+    learnRate = betarnd(2, 5, numSubs, 1);
+    iTemp     = gamrnd(2, .7, numSubs, 1); % changed from iTemp = gamrnd(2, 2, numSubs, 1);
 end
 
-%global dataDir numSubs;
-% set the directory where data will be written & read
-dataDir = '/Volumes/crisp/hinl/bandit/wem3/data';                          % ~#~                                                         % ~#~
-% set the number of subjects
-numSubs   = 50; 
- 
-learnRate = betarnd(2, 5, numSubs, 1);
-iTemp     = gamrnd(2, .7, numSubs, 1); % changed from iTemp = gamrnd(2, 2, numSubs, 1);
 smxParams = [learnRate iTemp];
 
 simData = [];
