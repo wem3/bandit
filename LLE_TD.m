@@ -1,18 +1,18 @@
-function [LLE] = LLE_TD(params, choice, rew)
+function [LLE] = LLE_TD(params, choice, reward)
  
-lr = params(1);
-beta = params(2);
-numArms = 4;
-Q=repmat(1/numArms,1,numArms);
+learnRate = params(1);
+iTemp     = params(2);
+numArms   = 4;
+Q         = repmat(1/numArms,1,numArms);
 
-smxProb = zeros(length(choice), length(Q));
+smxProb   = zeros(length(choice), numArms);
 
 for i = 1:length(choice)
     %softmax:
-    smxProb(i, :) = exp(beta*Q)./(sum(exp(beta*Q)));
+    smxProb(i, :) = exp(iTemp*Q)./(sum(exp(iTemp*Q)));
     
     %update Qs:
-    Q(choice(i)) = Q(choice(i)) + lr * (rew(i) - Q(choice(i)));
+    Q(choice(i)) = Q(choice(i)) + learnRate * (reward(i) - Q(choice(i)));
     %Q(3-choice(i)) = (1-lr) * Q(3-choice(i)); %decay unchosen
 end
 

@@ -1,5 +1,5 @@
-function [bombDrifts, oreDrifts] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)    
-% MAKEDRIFTS.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [bombDrifts, oreDrifts] = makeDrifts(writeDrifts, plotDrifts)    
+% MAKEDRIFTS.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Generate a [numTrials, 4] vector of drifting reward probabilities 
 % for 4-armed bandit for each of two outcome tracks. 
@@ -29,17 +29,15 @@ function [bombDrifts, oreDrifts] = makeDrifts(numTrials, driftRate, writeDrifts,
 % [probVector] = getDriftProb - the function that actually computes the 
 %                  drifting probability vector of interest
 % 
-% ~#wem3#~ [20150404]
+% ~#wem3#~ [20161027]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin == 0
-    numTrials   = 360;
-    driftRate   = 0.2; 
     writeDrifts = true;
     plotDrifts  = true;
-elseif nargin ~= 4
-    assert(nargin==4, 'Please specify driftRate, numTrials, writeDrifs, plotDrifts')
 end
+
+global dataDir numTrials driftRate;
 
 ok=0;
 
@@ -49,23 +47,25 @@ while ok == 0
         bombDrifts(arm,:) = getDriftProb(numTrials, driftRate);
         oreDrifts(arm,:)  = getDriftProb(numTrials, driftRate);
     end
-    
-    %Plot outcome probabilities of the 4 slots
-    figure;
-    subplot(4,1,1); plot(bombDrifts(1,:),'r'); hold on; plot(oreDrifts(1,:),'g')
-    subplot(4,1,2); plot(bombDrifts(2,:),'r'); hold on; plot(oreDrifts(2,:),'g')
-    subplot(4,1,3); plot(bombDrifts(3,:),'r'); hold on; plot(oreDrifts(3,:),'g')
-    subplot(4,1,4); plot(bombDrifts(4,:),'r'); hold on; plot(oreDrifts(4,:),'g')
+    % if selected, plot outcome probabilities for bombs (red) 
+    % and ore (green) for each of the four arms
+    if plotDrifts
+        figure;
+        subplot(4,1,1); plot(bombDrifts(1,:),'r'); hold on; plot(oreDrifts(1,:),'g')
+        subplot(4,1,2); plot(bombDrifts(2,:),'r'); hold on; plot(oreDrifts(2,:),'g')
+        subplot(4,1,3); plot(bombDrifts(3,:),'r'); hold on; plot(oreDrifts(3,:),'g')
+        subplot(4,1,4); plot(bombDrifts(4,:),'r'); hold on; plot(oreDrifts(4,:),'g')
+    end
     
     ok = input('Accept profile? 1 = Yes, 0 = No.\n');
     
 end
-  
 bombDrifts = bombDrifts';
 oreDrifts  = oreDrifts';
-if writeDrifts == true
-    dlmwrite('bombProbDrift.csv', bombDrifts, 'delimiter', ',');
-    dlmwrite('oreProbDrift.csv', oreDrifts, 'delimiter', ',');
+
+if writeDrifts
+    dlmwrite(fullfile(dataDir,'bombProbDrift.csv'), bombDrifts, 'delimiter', ',');
+    dlmwrite(fullfile(dataDir,'oreProbDrift.csv'), oreDrifts, 'delimiter', ',');
 end
 
 function [probVector] = getDriftProb(numTrials, driftRate)

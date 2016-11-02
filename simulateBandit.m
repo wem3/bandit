@@ -1,11 +1,10 @@
 function [simData smxParams] = simulateBandit(numSubs,writeData)
 % SIMULATEBANDIT.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Simulate [numSubs] subjects on 4-armed bandit (2 outcome) task.
+% Simulate [numSubs] subjects on k-armed bandit
 %
 % INPUT
 % numSubs: number of subjects for whom to simulate performance [integer]
-% defaults to 20
 %
 % writeData: create a new .csv file? [logical]
 % defaults to true (overwriting existing banditSimData.csv file)
@@ -33,23 +32,30 @@ function [simData smxParams] = simulateBandit(numSubs,writeData)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin == 0
-    numSubs = 50;
+    numSubs   = 50;
     writeData = true;
 end
 
-alph = betarnd(2, 5, numSubs, 1);
-iTemp = gamrnd(2, .7, numSubs, 1); % changed from iTemp = gamrnd(2, 2, numSubs, 1);
-smxParams = [alph iTemp];
+%global dataDir numSubs;
+% set the directory where data will be written & read
+dataDir = '/Volumes/crisp/hinl/bandit/wem3/data';                          % ~#~                                                         % ~#~
+% set the number of subjects
+numSubs   = 50; 
+ 
+learnRate = betarnd(2, 5, numSubs, 1);
+iTemp     = gamrnd(2, .7, numSubs, 1); % changed from iTemp = gamrnd(2, 2, numSubs, 1);
+smxParams = [learnRate iTemp];
 
 simData = [];
+
 for i = 1:numSubs
-    subData = generativeTD(i, alph(i), iTemp(i));
+    subData = generativeTD(i, learnRate(i), iTemp(i));
     simData = [simData; subData];
 end
 
 if writeData
-    filename = 'simData.csv';
+    filename = fullfile(dataDir,'simData.csv');
     dlmwrite(filename, simData, 'delimiter', ',');
-    filename = 'smxParams.csv';
+    filename = fullfile(dataDir,'smxParams.csv');
     dlmwrite(filename, smxParams, 'delimiter', ',');    
 end
