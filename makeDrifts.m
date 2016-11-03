@@ -1,4 +1,4 @@
-function [bombDrifts, oreDrifts] = makeDrifts(writeDrifts, plotDrifts)    
+function [bombDrifts, oreDrifts] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)    
 % MAKEDRIFTS.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Generate a [numTrials, 4] vector of drifting reward probabilities 
@@ -37,7 +37,7 @@ if nargin == 0
     plotDrifts  = true;
 end
 
-global dataDir numTrials driftRate;
+global dataDir;
 
 ok=0;
 

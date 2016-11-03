@@ -25,9 +25,11 @@ numArms   = 4;                                                             % ~#~
 % set the number of trials (i.e., "pulls")
 numTrials = 360;                                                           % ~#~
 % set the number of subjects
-numSubs   = 50;                                                            % ~#~
+numSubs   = 20;                                                            % ~#~
 % set the driftRate, the speed with which reward probabilities change
 driftRate = 0.2;     % note: unnecessary unless generating new drifts      % ~#~
+% generate new probability drifts? if using extant probabilities
+newDrifts = false;                                                         % ~#~
 % generate new choice data? set to false if only extracting params
 newChoices = true;                                                         % ~#~
 % use fixed learning rate & inverse temperature or sample from distribution?
@@ -45,7 +47,9 @@ if newChoices;
 else
     simData = load(fullfile(dataDir,'simData.csv'));
 end
-
+if newDrifts
+    makeDrifts(numTrials,driftRate,1,0);
+end
 
 % create a column vector of subject numbers
 subList = unique(simData(:,1));
@@ -54,14 +58,14 @@ subList = unique(simData(:,1));
 %%         (Less likely to require frequent adjustment)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % select optimization function: 'fmincon' or 'patternsearch'
-optFunction = 'fmincon';                                                   % ~#~
+optFunction = 'patternsearch';                                                   % ~#~
 % number of random initial start points for function optimization
 nStPts    = 10;                                                            % ~#~
 
 % set estimation method 
 % 'MLE' = Maximum Likelihood Estimation
 % 'MAP' = Maximum a Posteriori
-estMethod = 'MLE';                                                         % ~#~
+estMethod = 'MAP';                                                         % ~#~
 
 % point to chosen function accordingly
 if strcmp(estMethod,'MLE')
@@ -73,14 +77,19 @@ end
 % set boundaries for fmincon
 lowerBound = [0,-Inf];
 upperBound = [1,Inf];
-% set random starting points for fmincon
+% set random starting points for optimization
 initParams = [rand(nStPts, 1) normrnd(1.5, 1, nStPts,1)];
-% set options structure for fmincon
-options = optimset(@fmincon); 
-options = optimset(options, 'TolX', 1e-06, 'TolFun', 1e-06, ...
-                   'MaxFunEvals', 100000, 'LargeScale','off', ...
-                   'GradObj','off','derivativecheck', 'off', ...
-                   'display','final', 'Algorithm', 'interior-point'); %sqp
+% set appropriate options structure
+if strcmp(optFunction,'fmincon')
+    options = optimset(@fmincon); 
+    options = optimset(options, 'TolX', 1e-06, 'TolFun', 1e-06, ...
+                       'MaxFunEvals', 100000, 'LargeScale','off', ...
+                       'GradObj','off','derivativecheck', 'off', ...
+                       'display','notify', 'Algorithm', 'interior-point'); %sqp
+elseif strcmp(optFunction,'patternsearch')
+    options = psoptimset(@patternsearch);
+    options = psoptimset(options,'display','off');
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -99,6 +108,7 @@ for subCount =  1:length(subList)
     sub_params = [];
     sub_LLEs  = [];
     sub_flags = [];
+    sub_hess  = [];
 % loop over all start points (to get several different fits/LLEs)
     for reps = 1:nStPts
         % using fmincon
