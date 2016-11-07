@@ -36,7 +36,7 @@ newChoices = true;                                                         % ~#~
 learnRate = 0.3;
 iTemp     = 1.2;
 % make fixedParams empty if you want unique per-subject learnRate & iTemp
-fixedParams = [learnRate iTemp];
+fixedParams = [learnRate iTemp];                                           % ~#~
 if newChoices; 
     writeData = true;
     % simData: rows = numTrials, 
@@ -58,7 +58,7 @@ subList = unique(simData(:,1));
 %%         (Less likely to require frequent adjustment)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % select optimization function: 'fmincon' or 'patternsearch'
-optFunction = 'patternsearch';                                                   % ~#~
+optFunction = 'patternsearch';                                             % ~#~
 % number of random initial start points for function optimization
 nStPts    = 10;                                                            % ~#~
 
