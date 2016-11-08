@@ -1,5 +1,5 @@
 function [simData smxParams] = simulateBandit(numSubs,writeData,fixedParams)
-% SIMULATEBANDIT.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SIMULATEBANDIT.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Simulate [numSubs] subjects on k-armed bandit
 %
