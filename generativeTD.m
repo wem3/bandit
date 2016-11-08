@@ -1,26 +1,53 @@
 function [subData] = generativeTD(subNum, learnRate, iTemp)
-% runs restless bandit task on TD model
+% GENERATIVETD.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Function to choose arm, determine reward outcome,
+% and update Q-values on each trial.
+%
+% INPUT
+% subNum: subjects number (assuming loop over multiple subjects) [integer]
+%
+% learnRate: learning rate parameter (alpha) for softmax equation [float]
+%
+% iTemp: inverse temperature parameter (beta) for softmax equation [float]
+%
+% OUTPUT
+% subData: [ numTrials , 5] vector with TD data
+%   subData(:,1) = subject number
+%   subData(:,2) = trial number
+%   subData(:,3) = number of arm selected
+%   subData(:,4) = binary reward outcome
+%
+% NOTES
+%
+% Called by simulateBandit.m
+% 
+% ~#wem3#~ [20161108]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 global dataDir;
 
-pReward = load(fullfile(dataDir,'bombProbDrift.csv'));
-%use new rew prob drift for every sub:
-% [payoff] = makeDrifts();
+pReward = load(fullfile(dataDir,'bombProbDrift.csv')); % assumes extant .csv
+% to use unique drifting probabilities for each subject, instead call
+% [pReward, ~] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)
 
-numTrials = size(pReward,1);
-numArms   = size(pReward,2);
-choice    = nan(1,numTrials);
+numTrials    = size(pReward,1);
+numArms      = size(pReward,2);
+choice       = nan(1,numTrials); 
 rewardHist   = nan(1,numTrials);
-Q         = repmat(1/numArms,1,numArms);
-Qsamp     = Q;
+Q            = repmat(1/numArms,1,numArms);
+Qsamp        = Q;
 
+% loop over trials
 for i = 1:numTrials
+   % loop over arms to convert Q to probability of choosing each arm
+   % note: this is not the update, we just need a p to make the choice
    for arm = 1:numArms
       sMax(arm) = exp(iTemp*Q(arm)) ./ sum(exp(iTemp*Q));
    end
 
-   %choose:
-   [~, ~, choice(i)] = histcounts(rand(1),[0,cumsum(sMax)]); 
+   % choose the arm based on softmax p w/ some randomization for exploration
+   [~, ~, choice(i)] = histcounts(rand(1),[0,cumsum(sMax)]);
 
    %update TD Qs:
    [~, reward] = max([rand(1), pReward(i, choice(i))]); 
@@ -29,7 +56,7 @@ for i = 1:numTrials
    Q(choice(i)) = Q(choice(i)) + learnRate * (reward - Q(choice(i)));
 end
 
-%trial nums
+% a simple vector to index trial number
 trial = 1:numTrials;
-%make output:
+% set up subject output matrix for all trials:
 subData = [subNum*ones(numTrials, 1) trial' choice', rewardHist'];
