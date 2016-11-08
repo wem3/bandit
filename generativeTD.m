@@ -20,7 +20,7 @@ for i = 1:numTrials
    end
 
    %choose:
-   [~, choice(i)] = histc(rand(1),[0,cumsum(sMax)]); 
+   [~, ~, choice(i)] = histcounts(rand(1),[0,cumsum(sMax)]); 
 
    %update TD Qs:
    [~, reward] = max([rand(1), pReward(i, choice(i))]); 
