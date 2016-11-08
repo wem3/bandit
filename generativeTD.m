@@ -24,7 +24,7 @@ for i = 1:numTrials
 
    %update TD Qs:
    [~, reward] = max([rand(1), pReward(i, choice(i))]); 
-   reward = reward - 1; % make 0s and 1s
+   reward = reward - 1; % make 0s and 1s WHY IS THIS NOT A PROBLEM???
    rewardHist(i) = reward;
    Q(choice(i)) = Q(choice(i)) + learnRate * (reward - Q(choice(i)));
 end
