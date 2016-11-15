@@ -40,11 +40,9 @@ Qsamp        = Q;
 
 % loop over trials
 for i = 1:numTrials
-   % loop over arms to convert Q to probability of choosing each arm
+   % convert Q to probability of choosing each arm
    % note: this is not the update, we just need a p to make the choice
-   for arm = 1:numArms
-      sMax(arm) = exp(iTemp*Q(arm)) ./ sum(exp(iTemp*Q));
-   end
+   sMax(arm) = exp(iTemp*Q(arm)) ./ sum(exp(iTemp*Q));
 
    % choose the arm based on softmax p w/ some randomization for exploration
    [~, ~, choice(i)] = histcounts(rand(1),[0,cumsum(sMax)]);
