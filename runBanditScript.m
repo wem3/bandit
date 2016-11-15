@@ -17,7 +17,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % make these variables globally available to slim down other functions
-global dataDir numArms numTrials numSubs driftRate;
+global dataDir;
 % set the directory where data will be written & read
 dataDir = '/Volumes/crisp/hinl/bandit/wem3/data';                          % ~#~
 % set the number of arms (choice options)
