@@ -31,10 +31,10 @@ pReward = load(fullfile(dataDir,'bombProbDrift.csv')); % assumes extant .csv
 % to use unique drifting probabilities for each subject, instead call
 % [pReward, ~] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)
 
-numTrials    = size(pReward,1);
-numArms      = size(pReward,2);
-choice       = nan(1,numTrials); 
-rewardHist   = nan(1,numTrials);
+numTrials    = size(pReward,1);  % number of rows in the drift vector
+numArms      = size(pReward,2);  % number of columns in the drift vector
+choice       = nan(1,numTrials); % stores arm choices, NaNs as placeholders
+rewardHist   = nan(1,numTrials); % stores rewards, NaNs as placeholders
 Q            = zeros(1,numArms); % Qs initialized to 0
 
 % loop over trials
