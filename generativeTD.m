@@ -1,4 +1,4 @@
-function [subData] = generativeTD(subNum, learnRate, iTemp)
+function [subData] = generativeTD(subNum, learnRateGems, iTempGems, learnRateBomb, iTempBomb)
 % GENERATIVETD.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Function to choose arm, determine reward outcome,
@@ -16,7 +16,8 @@ function [subData] = generativeTD(subNum, learnRate, iTemp)
 %   subData(:,1) = subject number
 %   subData(:,2) = trial number
 %   subData(:,3) = number of arm selected
-%   subData(:,4) = binary reward outcome
+%   subData(:,4) = binary reward outcome: gems
+%   subData(:,5) = binary reward outcome: bomb
 %
 % NOTES
 %
@@ -27,21 +28,25 @@ function [subData] = generativeTD(subNum, learnRate, iTemp)
 
 global dataDir;
 % needs to be adjusted to allow for new drifts or load old ones...
-pReward = load(fullfile(dataDir,'bombProbDrift.csv')); % assumes extant .csv
+pGems = load(fullfile(dataDir,'gemsProbDrift.csv')); % assumes extant .csv
+pBomb = load(fullfile(dataDir,'bombProbDrift.csv')); % assumes extant .csv
 % to use unique drifting probabilities for each subject, instead call
-% [pReward, ~] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)
+% [pGems, pBomb] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)
 
 numTrials    = size(pReward,1);  % number of rows in the drift vector
 numArms      = size(pReward,2);  % number of columns in the drift vector
 choice       = nan(1,numTrials); % stores arm choices, NaNs as placeholders
-rewardHist   = nan(1,numTrials); % stores rewards, NaNs as placeholders
-Q            = zeros(1,numArms); % Qs initialized to 0
+rewardHist   = nan(2,numTrials); % stores rewards, NaNs as placeholders
+Qgems        = zeros(1,numArms); % Qs for gems initialized to 0
+Qbomb        = zeros(1,numArms); % Qs for bombs initialized to 0
+Qarms        = zeros(1,numArms); % Qs for combo initialized to 0
 
 % loop over trials
 for i = 1:numTrials
    % convert Q to probability of choosing each arm via softmax equation
    % note: this is not the update, we just need a p to make the choice
-   sMax(arm) = exp(iTemp*Q(arm)) ./ sum(exp(iTemp*Q));
+   smx = exp(iTempGems*Qgems) ./ sum(exp(iTempGems*Qgems));
+
 
    % choose the arm based on softmax probability, explanation at bottom
    [~, ~, choice(i)] = histcounts(rand(1),[0,cumsum(sMax)]);

@@ -1,4 +1,4 @@
-function [bombDrifts, oreDrifts] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)    
+function [gemsDrifts, bombDrifts] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)    
 % MAKEDRIFTS.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Generate a [numTrials, 4] vector of drifting reward probabilities 
@@ -22,7 +22,7 @@ function [bombDrifts, oreDrifts] = makeDrifts(numTrials, driftRate, writeDrifts,
 % OUTPUT
 % bombDrifts: [numTrials, 4] vector of probability for bomb on each trial
 %
-% oreDrifts: [numTrials, 4] vector of probability for ore on each trial
+% gemsDrifts: [numTrials, 4] vector of probability for gems on each trial
 %
 % SUBFUNCTIONS
 %
@@ -45,27 +45,27 @@ while ok == 0
     
     for arm=1:4
         bombDrifts(arm,:) = getDriftProb(numTrials, driftRate);
-        oreDrifts(arm,:)  = getDriftProb(numTrials, driftRate);
+        gemsDrifts(arm,:)  = getDriftProb(numTrials, driftRate);
     end
     % if selected, plot outcome probabilities for bombs (red) 
-    % and ore (green) for each of the four arms
+    % and gem (green) for each of the four arms
     if plotDrifts
         figure;
-        subplot(4,1,1); plot(bombDrifts(1,:),'r'); hold on; plot(oreDrifts(1,:),'g')
-        subplot(4,1,2); plot(bombDrifts(2,:),'r'); hold on; plot(oreDrifts(2,:),'g')
-        subplot(4,1,3); plot(bombDrifts(3,:),'r'); hold on; plot(oreDrifts(3,:),'g')
-        subplot(4,1,4); plot(bombDrifts(4,:),'r'); hold on; plot(oreDrifts(4,:),'g')
+        subplot(4,1,1); plot(bombDrifts(1,:),'r'); hold on; plot(gemDrifts(1,:),'g')
+        subplot(4,1,2); plot(bombDrifts(2,:),'r'); hold on; plot(gemDrifts(2,:),'g')
+        subplot(4,1,3); plot(bombDrifts(3,:),'r'); hold on; plot(gemDrifts(3,:),'g')
+        subplot(4,1,4); plot(bombDrifts(4,:),'r'); hold on; plot(gemDrifts(4,:),'g')
     end
     
     ok = input('Accept profile? 1 = Yes, 0 = No.\n');
     
 end
-bombDrifts = bombDrifts';
-oreDrifts  = oreDrifts';
+bombDrifts  = bombDrifts';
+gemsDrifts  = gemsDrifts';
 
 if writeDrifts
     dlmwrite(fullfile(dataDir,'bombProbDrift.csv'), bombDrifts, 'delimiter', ',');
-    dlmwrite(fullfile(dataDir,'oreProbDrift.csv'), oreDrifts, 'delimiter', ',');
+    dlmwrite(fullfile(dataDir,'gemsProbDrift.csv'), gemsDrifts, 'delimiter', ',');
 end
 
 function [probVector] = getDriftProb(numTrials, driftRate)
@@ -74,7 +74,7 @@ function [probVector] = getDriftProb(numTrials, driftRate)
 % Function to generate a vector of drifting probabilities 
 % with reflecting boundaries of 0 and 0.5. See above for input explanation
 %
-% Needs a more thorough explanation... 
+% Needs a more thorough explanation...
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
