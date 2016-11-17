@@ -1,4 +1,4 @@
-function [subData subQs] = generativeTD(subNum, iTemp, learnRateGems, learnRateBomb)
+function [subData] = generativeTD(subNum, learnRateGems, learnRateBomb, iTemp)
 % GENERATIVETD.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Function to choose arm, determine reward outcome,
@@ -39,8 +39,8 @@ numArms      = size(pGems,2);  % number of columns in the drift vector
 choice       = nan(numTrials,1); % stores arm choices, NaNs as placeholders
 gemsHist     = nan(numTrials,1); % stores rewards, NaNs as placeholders
 bombHist     = nan(numTrials,1); % stores rewards, NaNs as placeholders
-Qgems        = [10 10 10 10];
-Qbomb        = [10 10 10 10];
+Qgems        = [1 1 1 1];
+Qbomb        = [1 1 1 1];
 % loop over trials
 for i = 1:numTrials
    Qarms = Qgems + Qbomb;

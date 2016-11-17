@@ -19,7 +19,7 @@
 % make these variables globally available to slim down other functions
 global dataDir;
 % set the directory where data will be written & read
-dataDir = '/Volumes/crisp/hinl/bandit/wem3/data';                          % ~#~
+dataDir = '~/Desktop/bandit/wem3/data';                          % ~#~
 % set the number of arms (choice options)
 numArms   = 4;                                                             % ~#~
 % set the number of trials (i.e., "pulls")
@@ -33,16 +33,20 @@ newDrifts = false;                                                         % ~#~
 % generate new choice data? set to false if only extracting params
 newChoices = true;                                                         % ~#~
 % use fixed learning rate & inverse temperature or sample from distribution?
-learnRate = 0.3;
-iTemp     = 1.2;
+iTemp         = 1.5;
+learnRateGems = 0.4;
+learnRateBomb = 0.4;
+
 % make fixedParams empty if you want unique per-subject learnRate & iTemp
-fixedParams = [learnRate iTemp];                                           % ~#~
+fixedParams = [learnRateGems learnRateBomb iTemp];                         % ~#~
 if newChoices; 
     writeData = true;
-    % simData: rows = numTrials, 
-    %          columns = [subNum, trialNum, choice (arm), reward (binary)]
-    % smxParams: rows = numSubs
-    %            columns[learning rate, inverse temperature] 
+    % simData: 
+    %   rows    = numTrials, 
+    %   columns = [subNum, trialNum, choice (arm), gems, bomb (both binary)]
+    % smxParams: 
+    %   rows    = numSubs
+    %   columns = [inverse temperature, gems learning rate, bomb learning rate] 
     [simData, smxParams]= simulateBandit(numSubs,writeData,fixedParams);
 else
     simData = load(fullfile(dataDir,'simData.csv'));
@@ -58,14 +62,14 @@ subList = unique(simData(:,1));
 %%         (Less likely to require frequent adjustment)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % select optimization function: 'fmincon' or 'patternsearch'
-optFunction = 'patternsearch';                                             % ~#~
+optFunction = 'fmincon';                                                   % ~#~
 % number of random initial start points for function optimization
 nStPts    = 10;                                                            % ~#~
 
 % set estimation method 
 % 'MLE' = Maximum Likelihood Estimation
 % 'MAP' = Maximum a Posteriori
-estMethod = 'MAP';                                                         % ~#~
+estMethod = 'MLE';                                                         % ~#~
 
 % point to chosen function accordingly
 if strcmp(estMethod,'MLE')
@@ -75,10 +79,10 @@ elseif strcmp(estMethod,'MAP')
 end
 
 % set boundaries for fmincon
-lowerBound = [0,-Inf];
-upperBound = [1,Inf];
+lowerBound = [0, 0, -Inf];
+upperBound = [1, 1,  Inf];
 % set random starting points for optimization
-initParams = [rand(nStPts, 1) normrnd(1.5, 1, nStPts,1)];
+initParams = [rand(nStPts, 1)  rand(nStPts, 1) normrnd(1.2, 1, nStPts,1)];
 % set appropriate options structure
 if strcmp(optFunction,'fmincon')
     options = optimset(@fmincon); 
@@ -97,18 +101,17 @@ end
 fits   = [];
 stdevs = [];
 % loop over subjects, optimizing likelihood function & storing fits/SDs
-for subCount =  1:length(subList)
+for subCount = 1:length(subList)
     curSub   = subList(subCount,1);
     sprintf('\nWorking on subject %d \n',curSub)
 % parse current subject's data from simData
     subData = simData(find(simData(:,1) == curSub),:);
-    choice = subData(:,3);
-    reward = subData(:,4);
-% initialize empty vectors to store learnRate, iTemp, LLEs, & exit flags    
+    choice  = subData(:,3);
+    reward  = subData(:,[4:5]);
+% initialize empty vectors to store iTemp, gemsLearnRate, bombLearnRate, LLEs, & exit flags    
     sub_params = [];
-    sub_LLEs  = [];
-    sub_flags = [];
-    sub_hess  = [];
+    sub_LLEs   = [];
+    sub_flags  = [];
 % loop over all start points (to get several different fits/LLEs)
     for reps = 1:nStPts
         % using fmincon
@@ -123,9 +126,9 @@ for subCount =  1:length(subList)
                 [],[],[],[], lowerBound, upperBound, [], options);
         end
 
-        sub_params=[sub_params; params];
-        sub_LLEs=[sub_LLEs; LLE];
-        sub_flags=[sub_flags; exitflag];
+        sub_params = [sub_params; params];
+        sub_LLEs   = [sub_LLEs; LLE];
+        sub_flags  = [sub_flags; exitflag];
         %sub mat
         sub_output = [ones(size(sub_params,1),1)*curSub sub_params ...
         sub_LLEs sub_flags];

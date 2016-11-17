@@ -17,11 +17,10 @@ function [simData smxParams] = simulateBandit(numSubs,writeData,fixedParams)
 %   simData(:,4) = gems outcome
 %   simData(:,5) = bomb outcome
 %
-% smxParams: [numSubs, 4] vector with subject specific softmax parameters
+% smxParams: [numSubs, 3] vector with subject specific softmax parameters
 %   smxParams(:,1) = gems learning rate
-%   smxParams(:,2) = gems iTemp
-%   smxParams(:,3) = bomb learning rate
-%   smxParams(:,4) = bomb iTemp
+%   smxParams(:,2) = bomb learning rate
+%   smxParams(:,3) = iTemp
 %
 % NOTES
 %
@@ -34,24 +33,19 @@ function [simData smxParams] = simulateBandit(numSubs,writeData,fixedParams)
 global dataDir;
 % check for fixed learning rate & inverse temperature
 if ~isempty(fixedParams)
-learnRateGems = ones(numSubs,2)*fixedParams(1);
-iTempGems     = ones(numSubs,2)*fixedParams(2);
-learnRateBomb = ones(numSubs,2)*fixedParams(1);
-iTempBomb     = ones(numSubs,2)*fixedParams(2);
+learnRateGems = ones(numSubs,1)*fixedParams(1);
+learnRateBomb = ones(numSubs,1)*fixedParams(2);
+iTemp         = ones(numSubs,1)*fixedParams(3);
 else
+    iTemp         = gamrnd(2, .7, numSubs, 1);
     learnRateGems = betarnd(2, 5, numSubs, 1);
-    iTempGems     = gamrnd(2, .7, numSubs, 1);
     learnRateBomb = betarnd(2, 5, numSubs, 1);
-    iTempBomb     = gamrnd(2, .7, numSubs, 1);
 end
-
-smxParams = [learnRateGems iTempGems learnRateBomb iTempBomb];
-
-simData = [];
+smxParams = [learnRateGems learnRateBomb iTemp];
+simData   = [];
 
 for i = 1:numSubs
-    subData = generativeTD(i, learnRateGems(i), iTempGems(i),...
-                              learnRateBomb(i), iTempBomb(i));
+    subData = generativeTD(i, learnRateGems(i), learnRateBomb(i), iTemp(i));
     simData = [simData; subData];
 end
 
