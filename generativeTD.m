@@ -1,4 +1,4 @@
-function [subData] = generativeTD(subNum, learnRateGems, iTempGems, learnRateBomb, iTempBomb)
+function [subData subQs] = generativeTD(subNum, iTemp, learnRateGems, learnRateBomb)
 % GENERATIVETD.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Function to choose arm, determine reward outcome,
@@ -7,7 +7,8 @@ function [subData] = generativeTD(subNum, learnRateGems, iTempGems, learnRateBom
 % INPUT
 % subNum: subjects number (assuming loop over multiple subjects) [integer]
 %
-% learnRate: learning rate parameter (alpha) for softmax equation [float]
+% learnRateGems: learning rate parameter (alpha) for gems [float]
+% learnRateBomb: learning rate parameter (alpha) for bomb [float]
 %
 % iTemp: inverse temperature parameter (beta) for softmax equation [float]
 %
@@ -28,42 +29,45 @@ function [subData] = generativeTD(subNum, learnRateGems, iTempGems, learnRateBom
 
 global dataDir;
 % needs to be adjusted to allow for new drifts or load old ones...
-pGems = load(fullfile(dataDir,'gemsProbDrift.csv')); % assumes extant .csv
-pBomb = load(fullfile(dataDir,'bombProbDrift.csv')); % assumes extant .csv
+pGems = load(fullfile(dataDir,'pGems.csv')); % assumes extant .csv
+pBomb = load(fullfile(dataDir,'pBomb.csv')); % assumes extant .csv
 % to use unique drifting probabilities for each subject, instead call
 % [pGems, pBomb] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)
 
-numTrials    = size(pReward,1);  % number of rows in the drift vector
-numArms      = size(pReward,2);  % number of columns in the drift vector
-choice       = nan(1,numTrials); % stores arm choices, NaNs as placeholders
-rewardHist   = nan(2,numTrials); % stores rewards, NaNs as placeholders
-Qgems        = zeros(1,numArms); % Qs for gems initialized to 0
-Qbomb        = zeros(1,numArms); % Qs for bombs initialized to 0
-Qarms        = zeros(1,numArms); % Qs for combo initialized to 0
-
+numTrials    = size(pGems,1);  % number of rows in the drift vector
+numArms      = size(pGems,2);  % number of columns in the drift vector
+choice       = nan(numTrials,1); % stores arm choices, NaNs as placeholders
+gemsHist     = nan(numTrials,1); % stores rewards, NaNs as placeholders
+bombHist     = nan(numTrials,1); % stores rewards, NaNs as placeholders
+Qgems        = [10 10 10 10];
+Qbomb        = [10 10 10 10];
 % loop over trials
 for i = 1:numTrials
+   Qarms = Qgems + Qbomb;
    % convert Q to probability of choosing each arm via softmax equation
    % note: this is not the update, we just need a p to make the choice
-   smx = exp(iTempGems*Qgems) ./ sum(exp(iTempGems*Qgems));
-
+   smx = exp(iTemp*Qarms) ./ sum(exp(iTemp*Qarms));
 
    % choose the arm based on softmax probability, explanation at bottom
-   [~, ~, choice(i)] = histcounts(rand(1),[0,cumsum(sMax)]);
+   [~, ~, choice(i)] = histcounts(rand(1),[0,cumsum(smx)]);
 
    % determine whether the chosen arm pays out, based on pReward for that trial
-   [~, reward] = max([rand(1), pReward(i, choice(i))]);
+   [~, reward(1)] = max([rand(1), pGems(i, choice(i))]);
+   [~, reward(2)] = max([rand(1), pBomb(i, choice(i))]);
    % Convert reward from 1 (random number) or 2 (chosen arm) to binary format 
    reward = reward - 1; 
-   rewardHist(i) = reward;
+   gemsHist(i)  = reward(1);
+   bombHist(i) = reward(2);
    % Update Q values based on learning rate & prediction error
-   Q(choice(i)) = Q(choice(i)) + learnRate * (reward - Q(choice(i)));
+   Qgems(choice(i)) = Qgems(choice(i)) + learnRateGems * (reward(1) - Qgems(choice(i)));
+   Qbomb(choice(i)) = Qbomb(choice(i)) + learnRateBomb * (reward(2) - Qbomb(choice(i)));
+
 end
 
 % a simple vector to index trial number
 trial = 1:numTrials;
 % set up subject output matrix for all trials:
-subData = [subNum*ones(numTrials, 1) trial' choice', rewardHist'];
+subData = [subNum*ones(numTrials, 1) trial' choice, gemsHist, bombHist];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % How are we choosing an arm via histcounts and cumsum?

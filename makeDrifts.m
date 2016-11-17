@@ -1,4 +1,4 @@
-function [gemsDrifts, bombDrifts] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)    
+function [pGems, pBomb] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)    
 % MAKEDRIFTS.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Generate a [numTrials, 4] vector of drifting reward probabilities 
@@ -60,12 +60,12 @@ while ok == 0
     ok = input('Accept profile? 1 = Yes, 0 = No.\n');
     
 end
-bombDrifts  = bombDrifts';
-gemsDrifts  = gemsDrifts';
+pBomb  = bombDrifts';
+pGems  = gemsDrifts';
 
 if writeDrifts
-    dlmwrite(fullfile(dataDir,'bombProbDrift.csv'), bombDrifts, 'delimiter', ',');
-    dlmwrite(fullfile(dataDir,'gemsProbDrift.csv'), gemsDrifts, 'delimiter', ',');
+    dlmwrite(fullfile(dataDir,'pBomb.csv'), pBomb, 'delimiter', ',');
+    dlmwrite(fullfile(dataDir,'pGems.csv'), pGems, 'delimiter', ',');
 end
 
 function [probVector] = getDriftProb(numTrials, driftRate)
