@@ -92,7 +92,9 @@ elseif strcmp(optFunction,'patternsearch')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%% extract parameters from simulated data                                     %%
+%%         (no need to adjust unless there is a specific reason)              %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % create empty vectors to store model fit & SD
 fits   = [];
 stdevs = [];
