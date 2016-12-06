@@ -19,7 +19,7 @@
 % make these variables globally available to slim down other functions
 global dataDir;
 % set the directory where data will be written & read
-dataDir = '~/Desktop/bandit/wem3/data';                          % ~#~
+dataDir = '/Volumes/crisp/hinl/bandit/wem3/data';                          % ~#~
 % set the number of arms (choice options)
 numArms   = 4;                                                             % ~#~
 % set the number of trials (i.e., "pulls")
@@ -39,6 +39,11 @@ learnRateBomb = 0.4;
 
 % make fixedParams empty if you want unique per-subject learnRate & iTemp
 fixedParams = [learnRateGems learnRateBomb iTemp];                         % ~#~
+
+if newDrifts
+    makeDrifts(numTrials,driftRate,1,0);
+end
+
 if newChoices; 
     writeData = true;
     % simData: 
@@ -50,9 +55,6 @@ if newChoices;
     [simData, smxParams]= simulateBandit(numSubs,writeData,fixedParams);
 else
     simData = load(fullfile(dataDir,'simData.csv'));
-end
-if newDrifts
-    makeDrifts(numTrials,driftRate,1,0);
 end
 
 % create a column vector of subject numbers
@@ -148,5 +150,6 @@ for subCount = 1:length(subList)
 
 end
 
-fitFile = fullfile(dataDir,['subFits_',num2str(nStPts),'_StPts_',estMethod,'.csv']);
+fitFile = fullfile(dataDir,['subFits_',num2str(nStPts),'_sp_',estMethod,'_',...
+    num2str(numArms),'_arms_',num2str(numTrials),'_trials.csv']);
 dlmwrite(fitFile, fits)
