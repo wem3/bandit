@@ -39,9 +39,14 @@ Q            = zeros(1,numArms); % Qs initialized to 0
 
 % loop over trials
 for i = 1:numTrials
+   if i == 1
+      rewardPrev = 0;
+   elseif i > 1
+      rewardPrev = rewardHist(i-1);
+   end
    % convert Q to probability of choosing each arm via softmax equation
    % note: this is not the update, we just need a p to make the choice
-   sMax = exp(iTemp*Q) ./ sum(exp(iTemp*Q));
+   sMax = exp(iTemp*Q + stick*rewardPrev) ./ sum(exp(iTemp*Q));
 
    % choose the arm based on softmax probability, explanation at bottom
    [~, ~, choice(i)] = histcounts(rand(1),[0,cumsum(sMax)]);
@@ -51,6 +56,7 @@ for i = 1:numTrials
    % Convert reward from 1 (random number) or 2 (chosen arm) to binary format 
    reward = reward - 1; 
    rewardHist(i) = reward;
+
    % Update Q values based on learning rate & prediction error
    Q(choice(i)) = Q(choice(i)) + learnRate * (reward - Q(choice(i)));
 end

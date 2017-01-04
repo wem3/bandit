@@ -14,20 +14,19 @@ function [simData smxParams] = simulateBandit(numSubs,writeData,fixedParams)
 %   simData(:,1) = subject number
 %   simData(:,2) = trial number
 %   simData(:,3) = number of arm selected
-%   simData(:,4) = ore outcome
-%   simData(:,5) = bomb outcome
+%   simData(:,4) = reward outcome
 %
 % smxParams: [numSubs, 4] vector with subject specific softmax parameters
-%   simParams(:,1) = ore learning rate
-%   simParams(:,2) = ore iTemp
-%   simParams(:,3) = bomb learning rate
-%   simParams(:,4) = bomb iTemp
+%   smxParams(:,1) = learning rate
+%   smxParams(:,2) = iTemp
+%   smxParams(:,3) = stick (stickiness parameter)
 %
 % NOTES
 %
 % Learning rate (alpha) sampled from beta distribution (M = 0.2857).
 % Softmax temperature sampled from gamma distribution (M = check).
-% 
+% stickiness sampled from ???
+
 % ~#wem3#~ [20161027]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -36,17 +35,19 @@ global dataDir;
 if ~isempty(fixedParams)
 learnRate = ones(numSubs,1)*fixedParams(1); 
 iTemp     = ones(numSubs,1)*fixedParams(2);
+stick     = ones(numSubs,1)*fixedParams(3);
 else
     learnRate = betarnd(2, 5, numSubs, 1);
-    iTemp     = gamrnd(2, .7, numSubs, 1); % changed from iTemp = gamrnd(2, 2, numSubs, 1);
+    iTemp     = gamrnd(2, 2, numSubs, 1); % changed from iTemp = gamrnd(2, .7, numSubs, 1);
+    stick=randn(numSubs,1);
 end
 
-smxParams = [learnRate iTemp];
+smxParams = [learnRate iTemp stick];
 
 simData = [];
 
 for i = 1:numSubs
-    subData = generativeTD(i, learnRate(i), iTemp(i));
+    subData = generativeTD(i, learnRate(i), iTemp(i), stick(i));
     simData = [simData; subData];
 end
 
