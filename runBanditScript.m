@@ -25,23 +25,23 @@ numArms   = 4;                                                             % ~#~
 % set the number of trials (i.e., "pulls")
 numTrials = 360;                                                           % ~#~
 % set the number of subjects
-numSubs   = 20;                                                            % ~#~
+numSubs   = 50;                                                            % ~#~
 % set the driftRate, the speed with which reward probabilities change
 driftRate = 0.2;     % note: unnecessary unless generating new drifts      % ~#~
-% generate new probability drifts? if using extant probabilities
-newDrifts = false;                                                         % ~#~
+% generate new probability drifts? set to false if using extant probabilities
+newDrifts = true;                                                         % ~#~
 % generate new choice data? set to false if only extracting params
 newChoices = true;                                                         % ~#~
 % use fixed learning rate & inverse temperature or sample from distribution?
-iTemp         = 1.5;
-learnRateGems = 0.4;
-learnRateBomb = 0.4;
+iTemp         = 1.2;
+learnRateGems = 0.3;
+learnRateBomb = 0.3;
 
 % make fixedParams empty if you want unique per-subject learnRate & iTemp
 fixedParams = [learnRateGems learnRateBomb iTemp];                         % ~#~
 
 if newDrifts
-    makeDrifts(numTrials,driftRate,1,0);
+    makeDrifts(numTrials,driftRate,1,1);
 end
 
 if newChoices; 
@@ -150,6 +150,7 @@ for subCount = 1:length(subList)
 
 end
 
-fitFile = fullfile(dataDir,['subFits_',num2str(nStPts),'_sp_',estMethod,'_',...
-    num2str(numArms),'_arms_',num2str(numTrials),'_trials.csv']);
+fitFile = fullfile(dataDir,['fits_', num2str(numSubs), '_subs_',...
+    num2str(nStPts), '_sp_', estMethod, '_', num2str(numArms), '_arms_',...
+    num2str(numTrials), '_trials.csv']);
 dlmwrite(fitFile, fits)

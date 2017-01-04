@@ -37,7 +37,7 @@ learnRateGems = ones(numSubs,1)*fixedParams(1);
 learnRateBomb = ones(numSubs,1)*fixedParams(2);
 iTemp         = ones(numSubs,1)*fixedParams(3);
 else
-    iTemp         = gamrnd(2, .7, numSubs, 1);
+    iTemp         = gamrnd(2,  2, numSubs, 1);
     learnRateGems = betarnd(2, 5, numSubs, 1);
     learnRateBomb = betarnd(2, 5, numSubs, 1);
 end
