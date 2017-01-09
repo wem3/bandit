@@ -51,10 +51,10 @@ while ok == 0
     % and ore (green) for each of the four arms
     if plotDrifts
         figure;
-        subplot(4,1,1); plot(bombDrifts(1,:),'r'); hold on; plot(oreDrifts(1,:),'g')
-        subplot(4,1,2); plot(bombDrifts(2,:),'r'); hold on; plot(oreDrifts(2,:),'g')
-        subplot(4,1,3); plot(bombDrifts(3,:),'r'); hold on; plot(oreDrifts(3,:),'g')
-        subplot(4,1,4); plot(bombDrifts(4,:),'r'); hold on; plot(oreDrifts(4,:),'g')
+        subplot(4,1,1); plot(bombDrifts(1,:),'r'); hold on; plot(gemsDrifts(1,:),'g')
+        subplot(4,1,2); plot(bombDrifts(2,:),'r'); hold on; plot(gemsDrifts(2,:),'g')
+        subplot(4,1,3); plot(bombDrifts(3,:),'r'); hold on; plot(gemsDrifts(3,:),'g')
+        subplot(4,1,4); plot(bombDrifts(4,:),'r'); hold on; plot(gemsDrifts(4,:),'g')
     end
     
     ok = input('Accept profile? 1 = Yes, 0 = No.\n');
