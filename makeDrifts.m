@@ -1,8 +1,8 @@
-function [bombDrifts, oreDrifts] = makeDrifts(numTrials, driftRate, writeDrifts, plotDrifts)    
+function [bombDrifts, oreDrifts] = makeDrifts(numTrials, numArms, driftRate, writeDrifts, plotDrifts)    
 % MAKEDRIFTS.M %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Generate a [numTrials, 4] vector of drifting reward probabilities 
-% for 4-armed bandit for each of two outcome tracks. 
+% Generate a [numTrials, numArms] vector of drifting reward probabilities 
+% for k-armed bandit for each of two outcome tracks. 
 % Optionally outputs two .csv files in current working directory.
 %
 % INPUT
@@ -20,9 +20,9 @@ function [bombDrifts, oreDrifts] = makeDrifts(numTrials, driftRate, writeDrifts,
 %
 %
 % OUTPUT
-% bombDrifts: [numTrials, 4] vector of probability for bomb on each trial
+% pBomb: [numTrials, numArms] vector of probability for bomb on each trial
 %
-% oreDrifts: [numTrials, 4] vector of probability for ore on each trial
+% pGems: [numTrials, numArms] vector of probability for ore on each trial
 %
 % SUBFUNCTIONS
 %
@@ -43,9 +43,9 @@ ok=0;
 
 while ok == 0
     
-    for arm=1:4
+    for arm = 1:numArms
         bombDrifts(arm,:) = getDriftProb(numTrials, driftRate);
-        oreDrifts(arm,:)  = getDriftProb(numTrials, driftRate);
+        gemsDrifts(arm,:) = getDriftProb(numTrials, driftRate);
     end
     % if selected, plot outcome probabilities for bombs (red) 
     % and ore (green) for each of the four arms
@@ -60,12 +60,12 @@ while ok == 0
     ok = input('Accept profile? 1 = Yes, 0 = No.\n');
     
 end
-bombDrifts = bombDrifts';
-oreDrifts  = oreDrifts';
+pBomb = bombDrifts';
+pGems = gemsDrifts';
 
 if writeDrifts
-    dlmwrite(fullfile(dataDir,'bombProbDrift.csv'), bombDrifts, 'delimiter', ',');
-    dlmwrite(fullfile(dataDir,'oreProbDrift.csv'), oreDrifts, 'delimiter', ',');
+    dlmwrite(fullfile(dataDir,'pBomb.csv'), pBomb, 'delimiter', ',');
+    dlmwrite(fullfile(dataDir,'pGems.csv'), pGems, 'delimiter', ',');
 end
 
 function [probVector] = getDriftProb(numTrials, driftRate)
