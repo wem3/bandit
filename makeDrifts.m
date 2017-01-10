@@ -7,10 +7,8 @@ function [pBomb, pGems] = makeDrifts(numTrials, numArms, driftRate, writeDrifts,
 %
 % INPUT
 % numTrials: number of trials for which to generate probabilities [integer]
-% defaults to 360
 %
 % driftRate: determines how quickly probabilites change [double]
-%            defaults to 0.2.
 %
 % writeDrifts: create a new .csv files? [logical]
 % defaults to true (overwriting existing drift file)
@@ -29,7 +27,7 @@ function [pBomb, pGems] = makeDrifts(numTrials, numArms, driftRate, writeDrifts,
 % [probVector] = getDriftProb - the function that actually computes the 
 %                  drifting probability vector of interest
 % 
-% ~#wem3#~ [20161027]
+% ~#wem3#~ [20170110]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if nargin == 0
