@@ -1,9 +1,9 @@
 function [LLE] = LLE_TD(params, choice, reward)
 
-numArms = length(unique(choice));
+numArms   = length(unique(choice));
 learnRate = params(1);
 iTemp     = params(2);
-Q         = repmat(1/numArms,1,numArms);
+Q         = repmat(0,1,numArms);
 
 smxProb   = zeros(length(choice), numArms);
 

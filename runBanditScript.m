@@ -48,7 +48,7 @@ else
     simData = load(fullfile(dataDir,'simData.csv'));
 end
 if newDrifts
-    makeDrifts(numTrials,driftRate,1,0);
+    makeDrifts(numTrials, numArms, driftRate, 1, 0);
 end
 
 % create a column vector of subject numbers
@@ -60,7 +60,7 @@ subList = unique(simData(:,1));
 % select optimization function: 'fmincon' or 'patternsearch'
 optFunction = 'patternsearch';                                             % ~#~
 % number of random initial start points for function optimization
-nStPts    = 10;                                                            % ~#~
+nStPts = 10;                                                               % ~#~
 
 % set estimation method 
 % 'MLE' = Maximum Likelihood Estimation
@@ -78,7 +78,7 @@ end
 lowerBound = [0,-Inf];
 upperBound = [1,Inf];
 % set random starting points for optimization
-initParams = [rand(nStPts, 1) normrnd(1.5, 1, nStPts,1)];
+initParams = [rand(nStPts, 1) normrnd(1.5, 1, nStPts, 1)];
 % set appropriate options structure
 if strcmp(optFunction,'fmincon')
     options = optimset(@fmincon); 
@@ -92,7 +92,9 @@ elseif strcmp(optFunction,'patternsearch')
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%% extract parameters from simulated data                                     %%
+%%         (no need to adjust unless there is a specific reason)              %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % create empty vectors to store model fit & SD
 fits   = [];
 stdevs = [];

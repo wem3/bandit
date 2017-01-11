@@ -41,7 +41,7 @@ Q            = zeros(1,numArms); % Qs initialized to 0
 for i = 1:numTrials
    % convert Q to probability of choosing each arm via softmax equation
    % note: this is not the update, we just need a p to make the choice
-   sMax(arm) = exp(iTemp*Q(arm)) ./ sum(exp(iTemp*Q));
+   sMax = exp(iTemp*Q) ./ sum(exp(iTemp*Q));
 
    % choose the arm based on softmax probability, explanation at bottom
    [~, ~, choice(i)] = histcounts(rand(1),[0,cumsum(sMax)]);
