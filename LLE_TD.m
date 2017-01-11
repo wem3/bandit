@@ -2,19 +2,18 @@ function [LLE] = LLE_TD(params, choice, reward)
 
 numArms       = length(unique(choice));
 learnRateGems = params(1);
-learnRateBomb = params(2);
-iTemp         = params(3);
-Qgems         = repmat(1,1,numArms);
-Qbomb         = repmat(1,1,numArms);
+iTemp         = params(2);
+stick         = params(3);
+Q             = repmat(1,1,numArms);
 smx           = zeros(length(choice), numArms);
-
+lastChoice    = zeros(1,numArms);
 for i = 1:length(choice)
-    Q = Qgems + Qbomb;
     %softmax:
-    smx(i, choice(i)) = exp(iTemp*Q(choice(i)))./(sum(exp(iTemp*Q)));
+    smx(i, :) = exp(iTemp*Q + stick*lastChoice) ./ (sum(exp(iTemp*Q + stick*lastChoice)));
     %update Qs:
-    Qgems(choice(i)) = Qgems(choice(i)) + learnRateGems * (reward(i,1) - Qgems(choice(i)));
-    Qbomb(choice(i)) = Qbomb(choice(i)) + learnRateBomb * (reward(i,2) - Qbomb(choice(i)));
+    Q(choice(i)) = Q(choice(i)) + learnRateGems * (reward(i) - Q(choice(i)));
+    lastChoice   = [zeros(1,numArms)];
+    lastChoice(choice(i)) = 1;
 end
 
 cp1 = smx(choice==1, 1);

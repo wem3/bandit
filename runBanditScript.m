@@ -25,21 +25,21 @@ numArms   = 4;                                                             % ~#~
 % set the number of trials (i.e., "pulls")
 numTrials = 360;                                                           % ~#~
 % set the number of subjects
-numSubs   = 50;                                                            % ~#~
+numSubs   = 20;                                                            % ~#~
 % set the driftRate, the speed with which reward probabilities change
 driftRate = 0.2;     % note: unnecessary unless generating new drifts      % ~#~
 % generate new probability drifts? set to false if using extant probabilities
-newDrifts = true;                                                         % ~#~
+newDrifts = false;                                                         % ~#~
 % generate new choice data? set to false if only extracting params
 newChoices = true;                                                         % ~#~
 % use fixed learning rate & inverse temperature or sample from distribution?
 iTemp         = 1.2;
 learnRateGems = 0.3;
-learnRateBomb = 0.3;
+stick         = 2;
 
 % make fixedParams empty if you want unique per-subject learnRate & iTemp
-fixedParams = [learnRateGems learnRateBomb iTemp];                         % ~#~
-
+fixedParams = [learnRateGems iTemp stick];                         % ~#~
+%fixedParams = [];
 if newDrifts
     makeDrifts(numTrials,driftRate,1,1);
 end
@@ -81,10 +81,10 @@ elseif strcmp(estMethod,'MAP')
 end
 
 % set boundaries for fmincon
-lowerBound = [0, 0, -Inf];
-upperBound = [1, 1,  Inf];
+lowerBound = [0,   0, -10];
+upperBound = [1, Inf,  10];
 % set random starting points for optimization
-initParams = [rand(nStPts, 1)  rand(nStPts, 1) normrnd(1.2, 1, nStPts,1)];
+initParams = [rand(nStPts, 1), normrnd(1.2, 1, nStPts,1), randi([-10 10], nStPts, 1)];
 % set appropriate options structure
 if strcmp(optFunction,'fmincon')
     options = optimset(@fmincon); 
@@ -109,7 +109,7 @@ for subCount = 1:length(subList)
 % parse current subject's data from simData
     subData = simData(find(simData(:,1) == curSub),:);
     choice  = subData(:,3);
-    reward  = subData(:,[4:5]);
+    reward  = subData(:,4);
 % initialize empty vectors to store iTemp, gemsLearnRate, bombLearnRate, LLEs, & exit flags    
     sub_params = [];
     sub_LLEs   = [];
