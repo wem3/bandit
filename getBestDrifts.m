@@ -49,10 +49,16 @@ end
 
 % sort the matrix of summed correlations
 corrSort = sort(corrSum);
-% initialize an vector of nans to hold drift indices
+% initialize an empty vector to hold drift indices
 driftDex = nan(1,8);
 % loop for 8 drifts
 for d = 1:length(driftDex)
     % get the indices of the 8 least correlated sets of drifts
     driftDex(d) = find(corrSum == corrSort(d));
+    % plot each drift to make sure it looks normal
+    figure;
+    subplot(4,1,1); plot(driftMat(:,1,driftDex(d)),'r')
+    subplot(4,1,2); plot(driftMat(:,2,driftDex(d)),'r')
+    subplot(4,1,3); plot(driftMat(:,3,driftDex(d)),'r')
+    subplot(4,1,4); plot(driftMat(:,4,driftDex(d)),'r')
 end
