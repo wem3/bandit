@@ -4,6 +4,8 @@
 % by calling makeDrifts.m, computes correlations b/w arms for each set of 
 % reward probabilities, and identifies the least correlated sets.
 %
+% Currently configured for only one outcome type.
+%
 % Unless there is a specific reason to modify or directly call one of the 
 % included functions, all relevant changes can be made within this script. 
 %
