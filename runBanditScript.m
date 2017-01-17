@@ -25,7 +25,7 @@ numArms   = 4;                                                             % ~#~
 % set the number of trials (i.e., "pulls")
 numTrials = 360;                                                           % ~#~
 % set the number of subjects
-numSubs   = 20;                                                            % ~#~
+numSubs   = 50;                                                            % ~#~
 % set the driftRate, the speed with which reward probabilities change
 driftRate = 0.2;     % note: unnecessary unless generating new drifts      % ~#~
 % generate new probability drifts? set to false if using extant probabilities
@@ -33,7 +33,7 @@ newDrifts = false;                                                         % ~#~
 % generate new choice data? set to false if only extracting params
 newChoices = true;                                                         % ~#~
 % use fixed learning rate & inverse temperature or sample from distribution?
-iTemp         = 1.2;
+iTemp         = 4;
 learnRateGems = 0.3;
 stick         = 2;
 
