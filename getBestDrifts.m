@@ -50,15 +50,32 @@ end
 % sort the matrix of summed correlations
 corrSort = sort(corrSum);
 % initialize an empty vector to hold drift indices
-driftDex = nan(1,8);
-% loop for 8 drifts
-for d = 1:length(driftDex)
-    % get the indices of the 8 least correlated sets of drifts
-    driftDex(d) = find(corrSum == corrSort(d));
-    % plot each drift to make sure it looks normal
-    figure;
-    subplot(4,1,1); plot(driftMat(:,1,driftDex(d)),'r')
-    subplot(4,1,2); plot(driftMat(:,2,driftDex(d)),'r')
-    subplot(4,1,3); plot(driftMat(:,3,driftDex(d)),'r')
-    subplot(4,1,4); plot(driftMat(:,4,driftDex(d)),'r')
+goodDrifts = [];
+dCount = 1;
+% loop until we get 8 acceptable drifts 
+while length(goodDrifts) < 8
+    checkDrift = 0;
+    % loop till we fill up the driftDex
+    while checkDrift == 0
+        % get the indices of the 8 least correlated sets of drifts
+        thisDrift = find(corrSum == corrSort(dCount));
+        % plot each drift to make sure it looks normal
+        figure;
+        subplot(4,1,1); plot(driftMat(:,1,thisDrift),'r')
+        subplot(4,1,2); plot(driftMat(:,2,thisDrift),'r')
+        subplot(4,1,3); plot(driftMat(:,3,thisDrift),'r')
+        subplot(4,1,4); plot(driftMat(:,4,thisDrift),'r')
+        % display correlations between arms
+        fSpec = 'Correlations between arms:\n%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f';
+        sprintf(fSpec, corrMat(thisDrift,:))
+        checkDrift = input('Accept drift? 1 = Yes, 0 = No.\n');
+        dCount = dCount + 1;
+    end
+    goodDrifts = [goodDrifts, thisDrift];
+end
+% loop over acceptable drifts and save .json files
+for j = 1:length(goodDrifts)
+    thisDrift = driftMat(:,:,goodDrifts(j))';
+    fName = ['./data/pReward_',num2str(j),'.json'];
+    savejson('',thisDrift,fName);
 end
