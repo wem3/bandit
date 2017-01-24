@@ -13,7 +13,11 @@
 %
 % >> getBestDrifts.m
 %
-% after making the appropriate adjustments within the script.
+% after making the appropriate adjustments within the script. The correlations 
+% between each arm and a plot of the drifting probabilities will pop up. Some
+% drifts may be only weakly correlated, but still ruled problematic after
+% visual assessment (e.g., an arm staying at ceiling or floor for 100 trials,
+% obvious patterns that would lead to weird strategies, etc.) 
 % 
 % ~#wem3#~ [20170116]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,14 +56,15 @@ corrSort = sort(corrSum);
 % initialize an empty vector to hold drift indices
 goodDrifts = [];
 dCount = 1;
-% loop until we get 8 acceptable drifts 
+% loop until we get 8 acceptable drifts, starting w/ least correlated sets 
 while length(goodDrifts) < 8
+    % until we get 8 "good" ones, reset checkDrift to 0
     checkDrift = 0;
-    % loop till we fill up the driftDex
     while checkDrift == 0
         % get the indices of the 8 least correlated sets of drifts
         thisDrift = find(corrSum == corrSort(dCount));
-        % plot each drift to make sure it looks normal
+        % plot each drift to make sure it looks ok. Problems are long stretches
+        % of ceiling/floor, immediate visual relationships b/w arms, etc.
         figure;
         subplot(4,1,1); plot(driftMat(:,1,thisDrift),'r')
         subplot(4,1,2); plot(driftMat(:,2,thisDrift),'r')
@@ -68,6 +73,8 @@ while length(goodDrifts) < 8
         % display correlations between arms
         fSpec = 'Correlations between arms:\n%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f';
         sprintf(fSpec, corrMat(thisDrift,:))
+        % if the plot doesn't look good, keep checkDrift at 0, otherwise
+        % set to 1 to momentarily break the loop and go back to outer while loop
         checkDrift = input('Accept drift? 1 = Yes, 0 = No.\n');
         dCount = dCount + 1;
     end
