@@ -7,12 +7,17 @@ stick         = params(3);
 Q             = repmat(1,1,numArms);
 smx           = zeros(length(choice), numArms);
 lastChoice    = zeros(1,numArms);
+LL = 0;
 for i = 1:length(choice)
-    %softmax:
-    smx(i, :) = exp(iTemp*Q + stick*lastChoice) ./ (sum(exp(iTemp*Q + stick*lastChoice)));
+    %softmax: FIGURE OUT WOUTER's MODS!!!
+    Qchoice = Q+stick*lastChoice;
+    LL = LL + iTemp*Qchoice(choice(i))-logsumexp(iTemp*Qchoice);
+    % smx(i) = exp(iTemp*Qchoice(choice(i))/(sum(exp(iTemp*Qchoice)))
+    %smx(i) = exp(iTemp*Q(choice(i)) + stick*lastChoice(choice(i))) ./ (sum(exp(iTemp*Q + stick*lastChoice)));
+    %smx(i, :) = exp(iTemp*Q + stick*lastChoice) ./ (sum(exp(iTemp*Q + stick*lastChoice)));
     %update Qs:
     Q(choice(i)) = Q(choice(i)) + learnRateGems * (reward(i) - Q(choice(i)));
-    lastChoice   = [zeros(1,numArms)];
+    lastChoice   = zeros(1,numArms);
     lastChoice(choice(i)) = 1;
 end
 
